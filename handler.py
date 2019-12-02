@@ -19,9 +19,10 @@ def sparkline(datapoints):
 
     line = ""
     for dp in datapoints:
-        scaled = (dp - lower) / width
-        which_spark = int(scaled * n_sparks)
-        line += (sparks[which_spark])
+        if width != 0:
+            scaled = (dp - lower) / width
+            which_spark = int(scaled * n_sparks)
+            line += (sparks[which_spark])
 
     return line
 
@@ -73,9 +74,11 @@ def report_cost(event, context):
     # Sort the map by yesterday's cost
     most_expensive_yesterday = sorted(cost_per_day_by_service.items(), key=lambda i: i[1][-1], reverse=True)
 
+    print("service")
     for service_name, costs in most_expensive_yesterday[:5]:
         buffer += "%-40s %s $%5.2f\n" % (service_name, sparkline(costs), costs[-1])
 
+    print("other")
     other_costs = [0.0] * n_days
     for service_name, costs in most_expensive_yesterday[5:]:
         for i, cost in enumerate(costs):

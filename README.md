@@ -4,28 +4,36 @@
 
 Sends daily breakdowns of AWS costs to a Slack channel.
 
-# Install
+## Set up
 
-1. Install [`serverless`](https://serverless.com/), which I use to configure the AWS Lambda function that runs daily.
+Get the code:
 
-    ```
-    npm install -g serverless
-    npm install
-    ```
+```
+git clone https://github.com/BrunoDelb/aws-billing-to-slack.git
+cd aws-billing-to-slack
+```
 
-1. Create an [incoming webhook](https://www.slack.com/apps/new/A0F7XDUAZ) that will post to the channel of your choice on your Slack workspace. Grab the URL for use in the next step.
+Customize the `credentials` file to set your AWS keys.
 
-1. Deploy the system into your AWS account, replacing the webhook URL below with the one you generated above.
+Create a new Incoming Webhook in Slack: `https://www.slack.com/apps/new/A0F7XDUAZ`.
 
-    ```
-    serverless deploy --slack_url="https://hooks.slack.com/services/xxx/yyy/zzzz"
-    ```
+You can an URL like `https://hooks.slack.com/services/XXXXXXXXXX`.
 
-    You can also run it once to verify that it works:
+To build and deploy the Lambda Function:
 
-    ```
-    serverless invoke --function report_cost --slack_url="https://hooks.slack.com/services/xxx/yyy/zzzz"
-    ```
+```
+docker run --rm -v $PWD/credentials:/root/.aws/credentials:ro -v $PWD/aws-billing-to-slack:/app aws-cli serverless deploy --slack_url="https://hooks.slack.com/services/XXXXXXXXXX"
+```
+
+To support cache, you can add `-v $PWD/cache:/root/.cache/pip`.
+
+## Usage
+
+Now you can schedule the call or call it manually:
+
+```
+docker run --rm -v $PWD/credentials:/root/.aws/credentials:ro -v $PWD/aws-billing-to-slack:/app aws-cli serverless invoke --function report_cost --slack_url="https://hooks.slack.com/services/XXXXXXXXX`X"
+```
 
 ## Support for AWS Credits
 
